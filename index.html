@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="機械高">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<title>機械高</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#f57c00">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f2f2f7;--bar:#f8f8f8;--cell:#fff;--hd:#e6e6e8;--grid:#9a9a9f;--ink:#000;--sub:#6b6b70;--blue:#f57c00;--sum:#c9f0f8;--line:#c8c8cc;--red:#d92d20}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;overflow:hidden;background:var(--bar);overscroll-behavior:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--bar:#1c1c1e;--cell:#121214;--hd:#2c2c2e;--grid:#58585c;--ink:#fff;--sub:#a0a0a8;--blue:#ff9f0a;--sum:#14414d;--line:#38383a;--red:#ff6b61}}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;height:100%;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,"Hiragino Sans",system-ui,sans-serif;-webkit-text-size-adjust:100%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;overscroll-behavior:none}
+input,select{-webkit-user-select:text;user-select:text}
+button{font:inherit;color:var(--blue);background:none;border:0;padding:0 10px;min-height:38px;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+#bar{flex:none;display:grid;grid-template-columns:1fr minmax(0,auto) 1fr;align-items:center;min-height:44px;background:var(--bar);border-bottom:1px solid var(--line)}
+#bar .l{justify-self:start;white-space:nowrap}
+#bar .rt{justify-self:end;display:flex}
+#bar .ti{font-weight:600;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:44vw}
+#bar .nm{font:inherit;font-weight:600;border:1px solid var(--line);border-radius:8px;background:var(--cell);color:var(--ink);padding:4px 8px;width:42vw;min-height:32px;font-size:15px}
+#main{flex:1;min-height:0;display:flex;flex-direction:column}
+.strip{flex:none;display:flex;gap:6px;padding:4px 8px;background:var(--bar);border-bottom:1px solid var(--line);overflow-x:auto}
+.strip button{white-space:nowrap}
+.sc{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--bg);padding:0 14px 16px}
+th:first-child,td:first-child{border-left:1px solid var(--grid)}
+th{border-top:1px solid var(--grid)}
+td{background:var(--cell)}
+.addwrap{display:flex;justify-content:flex-end;margin-top:12px}
+.addrow{width:44px;height:44px;min-height:44px;padding:0;border:1px solid var(--blue);border-radius:50%;background:var(--cell);font-size:26px;line-height:1;font-weight:400}
+table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;min-width:576px}
+th,td{border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);height:44px;padding:0;position:relative;font-variant-numeric:tabular-nums}
+th{position:sticky;top:0;z-index:3;background:var(--hd);font-size:12px;line-height:1.25;font-weight:700}
+td input,td select{display:block;width:100%;height:100%;border:0;border-radius:0;background:transparent;color:var(--ink);padding:0 5px;font:inherit;font-size:14px;font-weight:700;min-height:0;-webkit-appearance:none;appearance:none}
+td input.t,td select{text-align:left}
+td input.r{text-align:right}
+.dt{flex:none;display:flex;align-items:center;gap:10px;padding:4px 12px;background:var(--bar);border-bottom:1px solid var(--line)}
+.dt label{color:var(--sub);font-size:14px}
+.dt input{width:auto;border:1px solid var(--line);border-radius:8px;background:var(--cell);color:var(--ink);font:inherit;font-size:15px;font-weight:600;padding:3px 8px;min-height:32px}
+td input::-webkit-inner-spin-button,td input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+td.v{text-align:right;padding:0 5px;font-size:15px;font-weight:700;color:var(--blue)}
+td.tt{color:var(--ink)}
+td.v.bad{color:var(--red);font-size:11px}
+#bar,#tabs,.strip,.dt,table,.addwrap,.list>*,.form>*{zoom:var(--z,1)}
+input[readonly]{color:var(--sub)}
+.zm{display:flex;align-items:center;justify-content:space-between}
+.zm b{font-size:17px}
+.zm button{border:1px solid var(--line);border-radius:8px;min-width:56px;font-size:18px}
+.list{flex:1;overflow:auto;padding:12px}
+.li{display:flex;align-items:center;background:var(--cell);border-bottom:1px solid var(--line)}
+.li:first-child{border-radius:10px 10px 0 0}.li:last-child{border-radius:0 0 10px 10px;border-bottom:0}.li:only-child{border-radius:10px}
+.li .o{flex:1;text-align:left;color:var(--ink);padding:8px 14px;min-height:48px}
+.li small{display:block;color:var(--sub);font-size:13px}
+.li .d{color:var(--red)}
+.empty{color:var(--sub);text-align:center;padding:40px 20px}
+.form{flex:1;overflow:auto;padding:14px}
+.form .f{background:var(--cell);border-radius:10px;padding:10px 14px;margin-bottom:10px}
+.form label{display:block;font-size:13px;color:var(--sub)}
+.form input{width:100%;border:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;font-weight:600;padding:2px 0;min-height:34px}
+.form .g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form p{color:var(--sub);font-size:13px;margin:0 4px 10px}
+#tabs{flex:none;display:flex;background:var(--bar);border-top:1px solid var(--line)}
+#tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--sub);padding:4px 0 3px}
+#tabs button.on{color:var(--blue)}
+#tabs svg{width:22px;height:22px}
+#toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="main"></div>
+<div id="tabs"></div>
+<div id="toast" role="status"></div>
+<script>
+const KEY="kikai-app-v1";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=p=>p+Date.now().toString(36)+Math.floor(Math.random()*999);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+let S=null,edit=false,armed="";
+const POLE={"1":1,"2":2};
+const newRow=(m)=>({m:m||"",k:"",n:"",s:"",p:(S&&S.lastPole)||""});
+const mk=(name,m)=>({id:uid("s"),name,date:today(),rows:Array.from({length:10},()=>newRow(m))});
+function load(){
+  let o=null;
+  try{o=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(!(o&&o.sites))try{o=JSON.parse(localStorage.getItem(KEY+"b"))}catch(e){}
+  if(!(o&&o.sites)){
+    o={models:[{id:"m1",name:"HiperHR",r:0.12,c:0},{id:"m2",name:"HiperV",r:0.089,c:0.0552}],sites:[],cur:null,view:"list",tab:"list",lastModel:"m1"};
+    o.sites=[mk("現場1","m1")];
+  }
+  o.sites.forEach(s=>{
+    if(!s.date)s.date=((s.rows.find(r=>r.d)||{}).d)||today();
+    s.rows.forEach(r=>{delete r.d;r.k=r.k||"";if(!POLE[r.p])r.p=""});
+  });
+  if(!o.sites.some(s=>s.id===o.cur)){o.cur=null;o.view="list"}
+  return o;
+}
+function save(){try{const j=JSON.stringify(S);localStorage.setItem(KEY,j);localStorage.setItem(KEY+"b",j)}catch(e){}}
+S=load();
+const cur=()=>S.sites.find(s=>s.id===S.cur)||null;
+const model=id=>S.models.find(m=>m.id===id);
+const empty=r=>!r.n.trim()&&r.s==="";
+function vert(r){
+  const m=model(r.m),s=parseFloat(r.s);
+  if(r.s===""||!m)return null;
+  if(!(s>0))return NaN;
+  const q=s*s-m.r*m.r;if(q<0)return NaN;
+  return Math.round((Math.sqrt(q)-m.c)*1000)/1000;
+}
+function total(r){const v=vert(r);return(v===null||v!==v)?null:Math.round((v+(POLE[r.p]||0))*1000)/1000}
+function say(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2500)}
+
+const ICON={
+  book:'<svg viewBox="0 0 26 26" fill="currentColor"><path d="M5 3h14a2 2 0 0 1 2 2v14H7a2 2 0 0 0 0 4h14v1H7a3 3 0 0 1-3-3V4a1 1 0 0 1 1-1z"/></svg>',
+  gear:'<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="13" cy="13" r="4"/><circle cx="13" cy="13" r="9" stroke-dasharray="4 3.1"/></svg>',
+  share:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M6 11H5v10h14V11h-1"/></svg>'
+};
+function tableHTML(sv){
+  const opts=id=>'<option value="">—</option>'+S.models.map(m=>`<option value="${m.id}" ${m.id===id?"selected":""}>${esc(m.name)}</option>`).join("");
+  return `<div class="sc"><table>
+<colgroup><col style="width:76px"><col style="width:84px"><col style="width:112px"><col style="width:72px"><col style="width:72px"><col style="width:84px"><col style="width:76px"></colgroup>
+<thead><tr><th>測点名</th><th>機種</th><th>機種<br>番号</th><th>直接高さ<br>(斜高)</th><th>垂直高さ</th><th>スタティック<br>ポール</th><th>合計</th></tr></thead>
+<tbody>${sv.rows.map((r,i)=>`<tr data-i="${i}"><td><input class="t" data-f="n" value="${esc(r.n)}" enterkeyhint="next" aria-label="測点名"></td><td><select data-f="m" aria-label="機種">${opts(r.m)}</select></td><td><input class="t" data-f="k" value="${esc(r.k)}" enterkeyhint="next" aria-label="機種番号"></td><td><input class="r" data-f="s" type="number" step="any" value="${esc(r.s)}" enterkeyhint="next" aria-label="直接高さ"></td><td class="v" data-o="v"></td><td><select data-f="p" aria-label="スタティックポール"><option value="">—</option><option value="1" ${r.p==="1"?"selected":""}>1本(1m)</option><option value="2" ${r.p==="2"?"selected":""}>2本(2m)</option></select></td><td class="v tt" data-o="t"></td></tr>`).join("")}</tbody></table><div class="addwrap"><button class="addrow" data-a="add1" aria-label="行を追加">＋</button></div></div>`;
+}
+function update(){
+  const sv=cur();if(!sv||S.tab!=="list"||S.view!=="detail")return;
+  sv.rows.forEach((r,i)=>{
+    const c=document.querySelector(`tr[data-i="${i}"] [data-o="v"]`);if(!c)return;
+    const v=vert(r);
+    c.className="v"+(v!==v?" bad":"");
+    c.textContent=v===null?"":(v!==v?"斜高が小さすぎます":v.toFixed(3));
+    const t=document.querySelector(`tr[data-i="${i}"] [data-o="t"]`),tv=total(r);
+    if(t)t.textContent=tv===null?"":tv.toFixed(3);
+  });
+  save();
+}
+function render(){
+  document.documentElement.style.setProperty("--z",S.zoom||1);
+  const sv=cur(),d=S.tab==="list"&&S.view==="detail"&&sv;
+  let bar,main;
+  if(S.tab==="settings"){
+    bar=`<button class="l" data-a="edit">${edit?"完了":"編集"}</button><b class="ti">機種設定</b><span class="rt">${edit?`<button data-a="addm" style="font-size:22px" aria-label="機種を追加">＋</button>`:""}</span>`;
+    main=`<div class="form"><div class="f zm"><div><label>表示の大きさ</label><b>${Math.round((S.zoom||1)*100)}%</b></div><span><button data-a="zoom" data-v="-1">−</button><button data-a="zoom" data-v="0">標準</button><button data-a="zoom" data-v="1">＋</button></span></div><p>機種の値を変えるには、左上の「編集」を押してください。</p><p>垂直高さ = √(斜高² − 水平オフセット²) − 補正値（小数第3位まで）。機種を選ぶと、その機種の値で計算されます。</p>${S.models.map(m=>`<div class="f"><label>機種名</label><input data-mid="${m.id}" data-k="name" ${edit?"":"readonly"} value="${esc(m.name)}"><div class="g"><div><label>水平オフセット (m)</label><input data-mid="${m.id}" data-k="r" type="number" step="any" ${edit?"":"readonly"} value="${m.r}"></div><div><label>補正値 (m)</label><input data-mid="${m.id}" data-k="c" type="number" step="any" ${edit?"":"readonly"} value="${m.c}"></div></div>${edit?`<button data-a="delm" data-id="${m.id}" style="color:var(--red);padding:0">${armed===m.id?"もう一度タップ":"この機種を削除"}</button>`:""}</div>`).join("")}</div>`;
+  }else if(!d){
+    bar=`<button class="l" data-a="edit">${edit?"完了":"編集"}</button><b class="ti">現場リスト</b><span class="rt"><button data-a="new" aria-label="新規現場" style="font-size:22px">＋</button></span>`;
+    main=`<div class="list">${S.sites.length?S.sites.map(s=>`<div class="li"><button class="o" data-a="open" data-id="${s.id}">${esc(s.name)}<small>${s.rows.filter(r=>!empty(r)).length} 件</small></button>${edit?`<button class="d" data-a="del" data-id="${s.id}">${armed===s.id?"もう一度タップ":"削除"}</button>`:""}</div>`).join(""):`<div class="empty">＋で現場を追加します。</div>`}</div>`;
+  }else{
+    bar=`<button class="l" data-a="back">‹ 現場リスト</button>${edit?`<input class="ti nm" data-nm value="${esc(sv.name)}" aria-label="現場名">`:`<b class="ti">${esc(sv.name)}</b>`}<span class="rt"><button data-a="csv" aria-label="CSV出力">${ICON.share}</button><button data-a="edit">${edit?"完了":"編集"}</button></span>`;
+    main=`<div class="dt"><label>日付</label><input type="date" data-sd value="${sv.date}" aria-label="日付"></div>`+(edit?`<div class="strip"><button data-a="add5">＋5行</button><button data-a="rm">最終行を削除</button><button data-a="csv">CSV出力</button><button data-a="del" data-id="${sv.id}" style="color:var(--red)">${armed===sv.id?"もう一度タップ":"現場を削除"}</button></div>`:"")+tableHTML(sv);
+  }
+  $("#bar").innerHTML=bar;$("#main").innerHTML=main;
+  $("#tabs").innerHTML=`<button data-a="tab" data-v="list" class="${S.tab==="list"?"on":""}">${ICON.book}現場リスト</button><button data-a="tab" data-v="settings" class="${S.tab==="settings"?"on":""}">${ICON.gear}機種設定</button>`;
+  const sc=document.querySelector(".sc");
+  if(sc&&sv){
+    if(S.sc&&S.sk===sv.id){sc.scrollLeft=S.sc[0];sc.scrollTop=S.sc[1]}
+    sc.addEventListener("scroll",()=>{S.sc=[sc.scrollLeft,sc.scrollTop];S.sk=sv.id;clearTimeout(window._st);window._st=setTimeout(save,300)},{passive:true});
+  }
+  update();
+}
+document.addEventListener("input",e=>{
+  const t=e.target,sv=cur();
+  if(t.dataset.mid){const m=model(t.dataset.mid),k=t.dataset.k;m[k]=k==="name"?t.value:(parseFloat(t.value)||0);save();return}
+  if(!sv)return;
+  if(t.hasAttribute("data-nm")){sv.name=t.value;save();return}
+  const f=t.dataset.f;if(!f||f==="m"||f==="p")return;
+  sv.rows[+t.closest("tr").dataset.i][f]=t.value;update();
+});
+document.addEventListener("change",e=>{
+  const t=e.target,sv=cur(),f=t.dataset.f;
+  if(sv&&t.hasAttribute("data-sd")){sv.date=t.value||today();save();return}
+  if(!sv||(f!=="p"&&f!=="m"))return;
+  const i=+t.closest("tr").dataset.i,v=t.value;
+  sv.rows[i][f]=v;
+  if(f==="m")S.lastModel=v;else S.lastPole=v;
+  save();render();
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,sv=cur();
+  if(a==="csv"){exportCsv();return}
+  if(a==="zoom"){const v=+b.dataset.v;S.zoom=v===0?1:Math.min(1.6,Math.max(0.7,Math.round(((S.zoom||1)+v*0.1)*10)/10))}
+  else if(a==="tab"){S.tab=b.dataset.v;edit=false}
+  else if(a==="open"){S.cur=b.dataset.id;S.view="detail";edit=false}
+  else if(a==="back"){S.view="list";edit=false}
+  else if(a==="new"){const s=mk("現場 "+(S.sites.length+1));S.sites.unshift(s);S.cur=s.id;S.view="detail";S.tab="list";edit=true}
+  else if(a==="edit")edit=!edit;
+  else if(a==="add1"&&sv){sv.rows.push(newRow())}
+  else if(a==="add5"&&sv){for(let i=0;i<5;i++)sv.rows.push(newRow())}
+  else if(a==="rm"&&sv){if(sv.rows.length>1)sv.rows.pop()}
+  else if(a==="addm"){const m={id:uid("m"),name:"新機種",r:0,c:0};S.models.push(m)}
+  else if(a==="del"||a==="delm"){
+    const id=b.dataset.id;
+    if(armed!==id){armed=id;setTimeout(()=>{if(armed===id){armed="";render()}},3000)}
+    else if(a==="delm"){
+      if(S.models.length<2){say("機種が1つだけのため削除できません")}
+      else{S.models=S.models.filter(m=>m.id!==id);if(S.lastModel===id)S.lastModel=S.models[0].id}
+      armed="";
+    }else{S.sites=S.sites.filter(s=>s.id!==id);if(S.cur===id){S.cur=null;S.view="list"}armed="";edit=false}
+  }
+  save();render();
+  if(a==="add1"){const sc=document.querySelector(".sc");if(sc){sc.scrollTop=sc.scrollHeight;}}
+});
+async function exportCsv(){
+  const sv=cur();if(!sv)return;
+  const q=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const L=[["現場","日付","測点名","機種","機種番号","直接高さ","垂直高さ","スタティックポール","合計"]];
+  sv.rows.forEach(r=>{if(empty(r))return;const v=vert(r),m=model(r.m);
+    const tv=total(r);L.push([sv.name,sv.date,r.n,m?m.name:"",r.k,r.s,v===null||v!==v?"":v.toFixed(3),r.p?r.p+"本":"",tv===null?"":tv.toFixed(3)])});
+  if(L.length<2){say("出力するデータがありません");return}
+  const csv="\ufeff"+L.map(r=>r.map(q).join(",")).join("\r\n");
+  const name=(sv.name||"kikaitaka").replace(/[\\/:*?"<>|\s]+/g,"_")+"_"+today()+".csv";
+  try{const file=new File([csv],name,{type:"text/csv"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});return}}
+  catch(e){if(e&&e.name==="AbortError")return}
+  try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();a.remove();say("CSVを保存しました");return}catch(e){}
+  say("出力できませんでした");
+}
+const NEXT={n:["k",0],k:["s",0],s:["n",1]};
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||e.target.tagName!=="INPUT")return;
+  e.preventDefault();
+  const t=e.target,sv=cur(),f=t.dataset.f,tr=t.closest("tr");
+  if(sv&&f&&NEXT[f]&&tr){
+    const i=+tr.dataset.i+NEXT[f][1];
+    if(i>=sv.rows.length){while(sv.rows.length<=i)sv.rows.push(newRow());save();render()}
+    const el=document.querySelector(`tr[data-i="${i}"] [data-f="${NEXT[f][0]}"]`);
+    if(el){el.focus();try{el.select()}catch(_){}try{el.scrollIntoView({block:"nearest",inline:"nearest"})}catch(_){}}
+  }else t.blur();
+  save();
+});
+addEventListener("visibilitychange",()=>{if(document.hidden)save()});
+addEventListener("pagehide",save);
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+addEventListener("offline",()=>say("圏外です。入力は端末に保存されます"));
+addEventListener("online",()=>say("オンラインに戻りました"));
+try{if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")}catch(e){}
+render();
+</script>
+</body>
+</html>
