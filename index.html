@@ -36,7 +36,7 @@ th{border-top:1px solid var(--grid)}
 td{background:var(--cell)}
 .addwrap{display:flex;justify-content:flex-end;margin-top:12px}
 .addrow{width:44px;height:44px;min-height:44px;padding:0;border:1px solid var(--blue);border-radius:50%;background:var(--cell);font-size:26px;line-height:1;font-weight:400}
-table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;min-width:576px}
+table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;min-width:620px}
 th,td{border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);height:44px;padding:0;position:relative;font-variant-numeric:tabular-nums}
 th{position:sticky;top:0;z-index:3;background:var(--hd);font-size:12px;line-height:1.25;font-weight:700}
 td input,td select{display:block;width:100%;height:100%;border:0;border-radius:0;background:transparent;color:var(--ink);padding:0 5px;font:inherit;font-size:14px;font-weight:700;min-height:0;-webkit-appearance:none;appearance:none}
@@ -47,6 +47,9 @@ td input.r{text-align:right}
 .dt input{width:auto;border:1px solid var(--line);border-radius:8px;background:var(--cell);color:var(--ink);font:inherit;font-size:15px;font-weight:600;padding:3px 8px;min-height:32px}
 td input::-webkit-inner-spin-button,td input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 td.v{text-align:right;padding:0 5px;font-size:15px;font-weight:700;color:var(--blue)}
+.pw{display:flex;height:100%}
+.pw select{flex:1;min-width:0}
+.pw input{flex:none;width:62px;border-left:1px solid var(--grid)}
 td.tt{color:var(--tot);background:var(--totbg);font-size:16px}
 td.v.bad{color:var(--red);font-size:11px}
 input[readonly]{color:var(--sub)}
@@ -87,7 +90,7 @@ const uid=p=>p+Date.now().toString(36)+Math.floor(Math.random()*999);
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 let S=null,edit=false,armed="";
 const POLE={"1":1,"2":2};
-const newRow=(m)=>({m:m||"",k:"",n:"",s:"",p:(S&&S.lastPole)||""});
+const newRow=(m)=>({m:m||"",k:"",n:"",s:"",p:(S&&S.lastPole)||"",ph:""});
 const mk=(name,m)=>({id:uid("s"),name,date:today(),rows:Array.from({length:10},()=>newRow(m))});
 function load(){
   let o=null;
@@ -99,7 +102,7 @@ function load(){
   }
   o.sites.forEach(s=>{
     if(!s.date)s.date=((s.rows.find(r=>r.d)||{}).d)||today();
-    s.rows.forEach(r=>{delete r.d;r.k=r.k||"";if(!POLE[r.p])r.p=""});
+    s.rows.forEach(r=>{delete r.d;r.k=r.k||"";r.ph=r.ph||"";if(!POLE[r.p]&&r.p!=="c")r.p=""});
   });
   if(!o.sites.some(s=>s.id===o.cur)){o.cur=null;o.view="list"}
   return o;
@@ -116,7 +119,8 @@ function vert(r){
   const q=s*s-m.r*m.r;if(q<0)return NaN;
   return Math.round((Math.sqrt(q)-m.c)*1000)/1000;
 }
-function total(r){const v=vert(r);return(v===null||v!==v)?null:Math.round((v+(POLE[r.p]||0))*1000)/1000}
+function poleH(r){return r.p==="c"?(parseFloat(r.ph)||0):(POLE[r.p]||0)}
+function total(r){const v=vert(r);return(v===null||v!==v)?null:Math.round((v+poleH(r))*1000)/1000}
 function say(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2500)}
 
 const ICON={
@@ -127,9 +131,9 @@ const ICON={
 function tableHTML(sv){
   const opts=id=>'<option value="">—</option>'+S.models.map(m=>`<option value="${m.id}" ${m.id===id?"selected":""}>${esc(m.name)}</option>`).join("");
   return `<div class="sc"><table>
-<colgroup><col style="width:76px"><col style="width:84px"><col style="width:112px"><col style="width:72px"><col style="width:72px"><col style="width:84px"><col style="width:76px"></colgroup>
+<colgroup><col style="width:76px"><col style="width:84px"><col style="width:112px"><col style="width:72px"><col style="width:72px"><col style="width:128px"><col style="width:76px"></colgroup>
 <thead><tr><th>測点名</th><th>機種</th><th>機種<br>番号</th><th>直接高さ<br>(斜高)</th><th>垂直高さ</th><th>スタティック<br>ポール</th><th>合計</th></tr></thead>
-<tbody>${sv.rows.map((r,i)=>`<tr data-i="${i}"><td><input class="t" data-f="n" value="${esc(r.n)}" enterkeyhint="next" aria-label="測点名"></td><td><select data-f="m" aria-label="機種">${opts(r.m)}</select></td><td><input class="t" data-f="k" value="${esc(r.k)}" enterkeyhint="next" aria-label="機種番号"></td><td><input class="r" data-f="s" type="number" step="any" value="${esc(r.s)}" enterkeyhint="next" aria-label="直接高さ"></td><td class="v" data-o="v"></td><td><select data-f="p" aria-label="スタティックポール"><option value="">—</option><option value="1" ${r.p==="1"?"selected":""}>1本(1m)</option><option value="2" ${r.p==="2"?"selected":""}>2本(2m)</option></select></td><td class="v tt" data-o="t"></td></tr>`).join("")}</tbody></table><div class="addwrap"><button class="addrow" data-a="add1" aria-label="行を追加">＋</button></div></div>`;
+<tbody>${sv.rows.map((r,i)=>`<tr data-i="${i}"><td><input class="t" data-f="n" value="${esc(r.n)}" enterkeyhint="next" aria-label="測点名"></td><td><select data-f="m" aria-label="機種">${opts(r.m)}</select></td><td><input class="t" data-f="k" value="${esc(r.k)}" enterkeyhint="next" aria-label="機種番号"></td><td><input class="r" data-f="s" type="number" step="any" value="${esc(r.s)}" enterkeyhint="next" aria-label="直接高さ"></td><td class="v" data-o="v"></td><td><div class="pw"><select data-f="p" aria-label="スタティックポール"><option value="">—</option><option value="1" ${r.p==="1"?"selected":""}>1本(1m)</option><option value="2" ${r.p==="2"?"selected":""}>2本(2m)</option><option value="c" ${r.p==="c"?"selected":""}>任意</option></select>${r.p==="c"?`<input class="r" data-f="ph" type="number" step="any" inputmode="decimal" placeholder="高さm" value="${esc(r.ph)}" aria-label="ポール高さ">`:""}</div></td><td class="v tt" data-o="t"></td></tr>`).join("")}</tbody></table><div class="addwrap"><button class="addrow" data-a="add1" aria-label="行を追加">＋</button></div></div>`;
 }
 function update(){
   const sv=cur();if(!sv||S.tab!=="list"||S.view!=="detail")return;
@@ -214,7 +218,7 @@ async function exportCsv(){
   const q=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const L=[["現場","日付","測点名","機種","機種番号","直接高さ","垂直高さ","スタティックポール","合計"]];
   sv.rows.forEach(r=>{if(empty(r))return;const v=vert(r),m=model(r.m);
-    const tv=total(r);L.push([sv.name,sv.date,r.n,m?m.name:"",r.k,r.s,v===null||v!==v?"":v.toFixed(3),r.p?r.p+"本":"",tv===null?"":tv.toFixed(3)])});
+    const tv=total(r);L.push([sv.name,sv.date,r.n,m?m.name:"",r.k,r.s,v===null||v!==v?"":v.toFixed(3),r.p==="c"?"任意"+(r.ph?" "+r.ph+"m":""):(r.p?r.p+"本":""),tv===null?"":tv.toFixed(3)])});
   if(L.length<2){say("出力するデータがありません");return}
   const csv="\ufeff"+L.map(r=>r.map(q).join(",")).join("\r\n");
   const name=(sv.name||"kikaitaka").replace(/[\\/:*?"<>|\s]+/g,"_")+"_"+today()+".csv";
